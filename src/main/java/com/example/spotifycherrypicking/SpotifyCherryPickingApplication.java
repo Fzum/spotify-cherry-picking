@@ -9,6 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,9 +58,16 @@ class SpotifyController {
 
 @Service
 class SpotifyService {
+    private OAuth2AuthorizedClientService authorizedClientService;
 
     public String fetchPlaylists() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+        OAuth2AuthorizedClient oauth2Client = this.authorizedClientService
+                .loadAuthorizedClient(
+                        oauthToken.getAuthorizedClientRegistrationId(),
+                        oauthToken.getName());
+        String jwt = oauth2Client.getAccessToken().getTokenValue();
         System.out.println(authentication);
         return authentication.getName();
     }
