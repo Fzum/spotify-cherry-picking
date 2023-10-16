@@ -12,15 +12,14 @@ public class WebClientConfig {
 
     @Bean
         // more infos at https://docs.spring.io/spring-security/site/docs/5.1.5.RELEASE/reference/html/servlet-webclient.html
-    WebClient webClient(ClientRegistrationRepository clientRegistrations,
-                        OAuth2AuthorizedClientRepository authorizedClients) {
+    WebClient spotifyWebClient(ClientRegistrationRepository clientRegistrations,
+                               OAuth2AuthorizedClientRepository authorizedClients) {
         var oauth = new ServletOAuth2AuthorizedClientExchangeFilterFunction(clientRegistrations, authorizedClients);
-        // (optional) explicitly opt into using the oauth2Login to provide an access token implicitly
-        // oauth.setDefaultOAuth2AuthorizedClient(true);
-        // (optional) set a default ClientRegistration.registrationId
-        // oauth.setDefaultClientRegistrationId("client-registration-id");
+        oauth.setDefaultClientRegistrationId("spotify");
+
         return WebClient.builder()
                 .apply(oauth.oauth2Configuration())
+                .baseUrl("https://api.spotify.com")
                 .build();
     }
 }
