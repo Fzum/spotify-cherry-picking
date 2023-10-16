@@ -1,27 +1,26 @@
 package com.example.spotifycherrypicking;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
 @Service
 public class SpotifyService {
-    private final OAuth2AuthorizedClientService authorizedClientService;
+    private final WebClient webClient;
 
-    SpotifyService(OAuth2AuthorizedClientService authorizedClientService) {
-        this.authorizedClientService = authorizedClientService;
+    SpotifyService(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public String fetchPlaylists() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        var oauthToken = (OAuth2AuthenticationToken) authentication;
-        var oauth2Client = this.authorizedClientService
-                .loadAuthorizedClient(
-                        oauthToken.getAuthorizedClientRegistrationId(),
-                        oauthToken.getName());
-        String jwt = oauth2Client.getAccessToken().getTokenValue();
-        System.out.println(authentication);
-        return authentication.getName();
+        Object spotify = webClient
+                .get()
+                .uri("https://api.spotify.com/v1/playlists/6ZD8Sy1bjSOJTwBhnekrUl")
+                .attributes(clientRegistrationId("spotify"))
+                .retrieve()
+                .bodyToMono(Object.class).block();
+
+        return spotify.toString();
     }
 }
