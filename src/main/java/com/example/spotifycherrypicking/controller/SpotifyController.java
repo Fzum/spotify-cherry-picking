@@ -15,6 +15,6 @@ public class SpotifyController {
 
     @GetMapping("/playlists")
     public String getPlaylists() {
-        return spotifyService.fetchPlaylists().toString();
+        return spotifyService.fetchAndOrganizePlaylistsByArtistAndTrackCount().toString();
     }
 }

@@ -1,7 +1,6 @@
 package com.example.spotifycherrypicking.service;
 
 import com.example.spotifycherrypicking.model.domain.Track;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,11 +9,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,10 +53,23 @@ class FavoriteTrackServiceTest {
                 ));
 
         // when
-        Map<String, List<Track>> stringListMap = favoriteTrackService.fetchPlaylists();
+        var artistSongMap = favoriteTrackService.fetchAndOrganizePlaylistsByArtistAndTrackCount();
 
         // then
-        Assertions.fail("todo: implement");
+        assertThat(artistSongMap.pollFirstEntry()).satisfies(entry -> {
+            assertThat(entry.getKey()).isEqualTo("westside gunn");
+            assertThat(entry.getValue()).hasSize(7);
+        });
+
+        assertThat(artistSongMap.pollFirstEntry()).satisfies(entry -> {
+            assertThat(entry.getKey()).isEqualTo("conway the machine");
+            assertThat(entry.getValue()).hasSize(5);
+        });
+
+        assertThat(artistSongMap.pollFirstEntry()).satisfies(entry -> {
+            assertThat(entry.getKey()).isEqualTo("benny the butcher");
+            assertThat(entry.getValue()).hasSize(3);
+        });
     }
 
 }

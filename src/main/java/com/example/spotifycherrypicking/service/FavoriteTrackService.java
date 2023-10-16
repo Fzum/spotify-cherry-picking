@@ -3,9 +3,7 @@ package com.example.spotifycherrypicking.service;
 import com.example.spotifycherrypicking.model.domain.Track;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -17,7 +15,7 @@ public class FavoriteTrackService {
         this.spotifyWebService = spotifyWebService;
     }
 
-    public Map<String, List<Track>> fetchPlaylists() {
+    public SequencedMap<String, List<Track>> fetchAndOrganizePlaylistsByArtistAndTrackCount() {
         Map<String, List<Track>> collect = spotifyWebService.fetchPlaylists()
                 .collect(Collectors.groupingBy(
                         Track::artist,
@@ -25,10 +23,19 @@ public class FavoriteTrackService {
                                 Collectors.mapping(Function.identity(), Collectors.toList()),
                                 perArtistTracks -> {
                                     perArtistTracks.sort(Comparator.comparing(Track::addedAt));
-                                    return perArtistTracks;
+                                    return perArtistTracks.reversed();
                                 }
                         )
                 ));
-        return collect;
+
+        return collect.entrySet()
+                .stream()
+                .sorted((e1, e2) -> Integer.compare(e2.getValue().size(), e1.getValue().size()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
     }
 }
