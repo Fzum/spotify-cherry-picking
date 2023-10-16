@@ -1,5 +1,6 @@
 package com.example.spotifycherrypicking;
 
+import com.example.spotifycherrypicking.model.SpotifyTrackResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -14,13 +15,13 @@ public class SpotifyService {
     }
 
     public String fetchPlaylists() {
-        Object spotify = webClient
+        SpotifyTrackResponse spotify = webClient
                 .get()
-                .uri("https://api.spotify.com/v1/playlists/6ZD8Sy1bjSOJTwBhnekrUl")
+                .uri("https://api.spotify.com/v1/me/tracks")
                 .attributes(clientRegistrationId("spotify"))
                 .retrieve()
-                .bodyToMono(Object.class).block();
+                .bodyToMono(SpotifyTrackResponse.class).block();
 
-        return spotify.toString();
+        return "user has " + spotify.total() + " tracks";
     }
 }
