@@ -1,4 +1,4 @@
-package com.example.spotifycherrypicking;
+package com.example.spotifycherrypicking.service;
 
 import com.example.spotifycherrypicking.model.Item;
 import com.example.spotifycherrypicking.model.SpotifyTrackResponse;
@@ -10,13 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
-
 @Service
-public class SpotifyService {
+public class FavoriteTrackService {
     private final WebClient spofifyWebClient;
 
-    SpotifyService(WebClient spofifyWebClient) {
+    FavoriteTrackService(WebClient spofifyWebClient) {
         this.spofifyWebClient = spofifyWebClient;
     }
 

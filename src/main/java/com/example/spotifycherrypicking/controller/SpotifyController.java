@@ -1,15 +1,15 @@
-package com.example.spotifycherrypicking;
+package com.example.spotifycherrypicking.controller;
 
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
+import com.example.spotifycherrypicking.service.FavoriteTrackService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SpotifyController {
 
-    private final SpotifyService spotifyService;
+    private final FavoriteTrackService spotifyService;
 
-    public SpotifyController(SpotifyService spotifyService) {
+    public SpotifyController(FavoriteTrackService spotifyService) {
         this.spotifyService = spotifyService;
     }
 
