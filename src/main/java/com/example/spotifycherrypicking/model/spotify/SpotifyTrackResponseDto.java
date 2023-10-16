@@ -1,13 +1,13 @@
-package com.example.spotifycherrypicking.model;
+package com.example.spotifycherrypicking.model.spotify;
 
 import java.util.List;
 
-public record SpotifyTrackResponse(
+public record SpotifyTrackResponseDto(
         int limit,
         String next,
         int offset,
         String previous,
         int total,
-        List<Item> items
+        List<ItemDto> items
 ) {
 }

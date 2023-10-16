@@ -1,11 +1,11 @@
-package com.example.spotifycherrypicking.model;
+package com.example.spotifycherrypicking.model.spotify;
 
 import java.util.List;
 import java.util.Map;
 
-public record Track(
-        Album album,
-        List<Artist> artists,
+public record TrackDto(
+        AlbumDto album,
+        List<ArtistDto> artists,
         List<String> availableMarkets,
         int discNumber,
         long durationMs,

@@ -1,8 +1,8 @@
-package com.example.spotifycherrypicking.model;
+package com.example.spotifycherrypicking.model.spotify;
 
 import java.util.Map;
 
-public record Artist(
+public record ArtistDto(
         Map<String, String> externalUrls,
         String href,
         String id,
