@@ -3,10 +3,10 @@ package com.example.spotifycherrypicking.service;
 import com.example.spotifycherrypicking.model.domain.Track;
 import com.example.spotifycherrypicking.model.spotify.ItemDto;
 import com.example.spotifycherrypicking.model.spotify.SpotifyTrackResponseDto;
-import com.example.spotifycherrypicking.model.spotify.TrackDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -34,7 +34,7 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
                 .bodyToMono(SpotifyTrackResponseDto.class)
                 .block();
 
-        final List<TrackDto> trackDtos = new ArrayList<>(spotify.items().stream().map(ItemDto::track).toList());
+        final List<ItemDto> trackDtos = new ArrayList<>(spotify.items());
 
         if (spotify.next() != null) {
             while (hasNext) {
@@ -45,7 +45,7 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
                         .bodyToMono(SpotifyTrackResponseDto.class)
                         .block();
 
-                trackDtos.addAll(spotify.items().stream().map(ItemDto::track).toList());
+                trackDtos.addAll(spotify.items());
 
                 if (spotify.next() == null) {
                     hasNext = false;
@@ -54,6 +54,12 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
         }
 
         return trackDtos.stream()
-                .map(d -> new Track(d.id(), d.name(), d.album().name(), d.artists().getFirst().name()));
+                .map(d -> new Track(
+                        d.track().id(),
+                        d.track().name(),
+                        d.track().album().name(),
+                        d.track().artists().getFirst().name(),
+                        OffsetDateTime.parse(d.addedAt()).toLocalDateTime()
+                ));
     }
 }
