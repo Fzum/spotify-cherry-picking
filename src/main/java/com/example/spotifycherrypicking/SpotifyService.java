@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
@@ -53,6 +54,8 @@ public class SpotifyService {
         }
 
 
-        return "user has " + tracks.size() + " tracks";
+        String trackNamesDelimited = tracks.stream().map(Track::name).collect(Collectors.joining("\n"));
+        return "user has %d tracks: \n %s"
+                .formatted(tracks.size(), trackNamesDelimited);
     }
 }
