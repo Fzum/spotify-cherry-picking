@@ -101,6 +101,7 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
                 .bodyValue(addTracksToPlaylistDto)
                 .retrieve()
                 .bodyToMono(Void.class)
+                .doOnError(e -> System.out.println(e.getMessage()))
                 .block();
     }
 }

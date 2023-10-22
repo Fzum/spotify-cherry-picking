@@ -1,8 +1,10 @@
 package com.example.spotifycherrypicking.model.spotify;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record CreatePlaylistRequestDto(
         String name,
         String description,
-        boolean isPublic
+        @JsonProperty("public") boolean isPublic
 ) {
 }
