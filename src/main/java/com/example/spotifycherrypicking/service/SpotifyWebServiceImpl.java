@@ -1,9 +1,8 @@
 package com.example.spotifycherrypicking.service;
 
+import com.example.spotifycherrypicking.model.AddTracksToPlaylistDto;
 import com.example.spotifycherrypicking.model.domain.Track;
-import com.example.spotifycherrypicking.model.spotify.ItemDto;
-import com.example.spotifycherrypicking.model.spotify.SpotifyTrackResponseDto;
-import com.example.spotifycherrypicking.model.spotify.UserProfileDto;
+import com.example.spotifycherrypicking.model.spotify.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -21,7 +20,7 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
     }
 
     @Override
-    public Stream<Track> fetchPlaylists() {
+    public Stream<Track> fetchTracks() {
         boolean hasNext = true;
 
         SpotifyTrackResponseDto spotify = spofifyWebClient
@@ -55,13 +54,17 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
         }
 
         return trackDtos.stream()
-                .map(d -> new Track(
-                        d.track().id(),
-                        d.track().name(),
-                        d.track().album().name(),
-                        d.track().artists().getFirst().name(),
-                        OffsetDateTime.parse(d.addedAt()).toLocalDateTime()
-                ));
+                .map(d -> {
+                    var track = d.track();
+                    return new Track(
+                            track.id(),
+                            track.name(),
+                            track.album().name(),
+                            track.uri(),
+                            track.artists().getFirst().name(),
+                            OffsetDateTime.parse(d.addedAt()).toLocalDateTime()
+                    );
+                });
     }
 
     @Override
@@ -71,6 +74,33 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
                 .uri("/v1/me")
                 .retrieve()
                 .bodyToMono(UserProfileDto.class)
+                .block();
+    }
+
+    @Override
+    public String createPlaylist(String userId, CreatePlaylistRequestDto createPlaylistRequestDto) {
+        return spofifyWebClient
+                .post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v1/users/{user_id}/playlists")
+                        .build(userId))
+                .bodyValue(createPlaylistRequestDto)
+                .retrieve()
+                .bodyToMono(CreatePlaylistResponseDto.class)
+                .block()
+                .id();
+    }
+
+    @Override
+    public void addTracksToPlaylist(String playlistId, AddTracksToPlaylistDto addTracksToPlaylistDto) {
+        spofifyWebClient
+                .post()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v1/playlists/{playlist_id}/tracks")
+                        .build(playlistId))
+                .bodyValue(addTracksToPlaylistDto)
+                .retrieve()
+                .bodyToMono(Void.class)
                 .block();
     }
 }

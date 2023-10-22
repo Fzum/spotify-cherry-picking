@@ -1,7 +1,6 @@
 package com.example.spotifycherrypicking.service;
 
 import com.example.spotifycherrypicking.model.domain.Track;
-import com.example.spotifycherrypicking.model.spotify.UserProfileDto;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -9,15 +8,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class FavoriteTrackService {
+public class FavoriteTrackSpotifyService {
     private final SpotifyWebService spotifyWebService;
 
-    public FavoriteTrackService(SpotifyWebService spotifyWebService) {
+    public FavoriteTrackSpotifyService(SpotifyWebService spotifyWebService) {
         this.spotifyWebService = spotifyWebService;
     }
 
-    public SequencedMap<String, List<Track>> fetchAndOrganizePlaylistsByArtistAndTrackCount() {
-        Map<String, List<Track>> collect = spotifyWebService.fetchPlaylists()
+    public SequencedMap<String, List<Track>> fetchAndOrganizeMyFavoriteTracksByArtistAndTrackCount() {
+        Map<String, List<Track>> collect = spotifyWebService.fetchTracks()
                 .collect(Collectors.groupingBy(
                         Track::artist,
                         Collectors.collectingAndThen(
@@ -41,9 +40,5 @@ public class FavoriteTrackService {
                 ));
 
         return organizedSongsMap;
-    }
-
-    public UserProfileDto fetchMe() {
-        return spotifyWebService.fetchUserProfile();
     }
 }

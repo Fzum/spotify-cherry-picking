@@ -1,25 +1,39 @@
 package com.example.spotifycherrypicking.controller;
 
-import com.example.spotifycherrypicking.service.FavoriteTrackService;
+import com.example.spotifycherrypicking.service.CherryPickArtistService;
+import com.example.spotifycherrypicking.service.FavoriteTrackSpotifyService;
+import com.example.spotifycherrypicking.service.MeSpotifyService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class SpotifyController {
 
-    private final FavoriteTrackService spotifyService;
+    private final FavoriteTrackSpotifyService favoriteTrackSpotifyService;
+    private final MeSpotifyService meSpotifyService;
+    private final CherryPickArtistService cherryPickArtistService;
 
-    public SpotifyController(FavoriteTrackService spotifyService) {
-        this.spotifyService = spotifyService;
+    public SpotifyController(
+            FavoriteTrackSpotifyService favoriteTrackSpotifyService,
+            MeSpotifyService meSpotifyService, CherryPickArtistService cherryPickArtistService) {
+        this.favoriteTrackSpotifyService = favoriteTrackSpotifyService;
+        this.meSpotifyService = meSpotifyService;
+        this.cherryPickArtistService = cherryPickArtistService;
     }
 
     @GetMapping("/playlists")
     public String getPlaylists() {
-        return spotifyService.fetchAndOrganizePlaylistsByArtistAndTrackCount().toString();
+        return favoriteTrackSpotifyService.fetchAndOrganizeMyFavoriteTracksByArtistAndTrackCount().toString();
     }
 
     @GetMapping("/me")
     public String getMe() {
-        return spotifyService.fetchMe().toString();
+        return meSpotifyService.fetchMe().toString();
+    }
+
+    @GetMapping("/create-cherry-picked-playlists")
+    public String createPlaylists() {
+        cherryPickArtistService.createCherryPickedPlaylists();
+        return "Playlists created!";
     }
 }
