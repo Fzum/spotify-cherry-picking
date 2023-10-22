@@ -62,7 +62,7 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
                             track.album().name(),
                             track.uri(),
                             track.artists().getFirst().name(),
-                            OffsetDateTime.parse(d.addedAt()).toLocalDateTime()
+                            track.album().getNormalizedReleaseDate()
                     );
                 });
     }

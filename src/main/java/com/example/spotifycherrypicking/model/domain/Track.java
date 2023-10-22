@@ -1,6 +1,6 @@
 package com.example.spotifycherrypicking.model.domain;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record Track(
         String spotifyId,
@@ -8,6 +8,6 @@ public record Track(
         String album,
         String uri,
         String artist,
-        LocalDateTime addedAt
+        LocalDate albumReleaseDate
 ) {
 }

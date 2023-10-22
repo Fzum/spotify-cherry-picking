@@ -22,7 +22,7 @@ public class FavoriteTrackSpotifyService {
                         Collectors.collectingAndThen(
                                 Collectors.mapping(Function.identity(), Collectors.toList()),
                                 perArtistTracks -> {
-                                    perArtistTracks.sort(Comparator.comparing(Track::addedAt));
+                                    perArtistTracks.sort(Comparator.comparing(Track::albumReleaseDate));
                                     return perArtistTracks.reversed();
                                 }
                         )

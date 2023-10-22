@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -28,7 +28,7 @@ class FavoriteTrackSpotifyServiceTest {
     @DisplayName("should return map of tracks to artist when artist appears more or five times")
     void shouldReturnMapOfTracksToArtist() {
         // given
-        var currentDateTime = LocalDateTime.now();
+        var currentDateTime = LocalDate.now();
 
         var random = new Random();
 
