@@ -25,7 +25,7 @@ class FavoriteTrackServiceTest {
     private FavoriteTrackService favoriteTrackService;
 
     @Test
-    @DisplayName("should return map of tracks to artist when artist appears more than once")
+    @DisplayName("should return map of tracks to artist when artist appears more or five times")
     void shouldReturnMapOfTracksToArtist() {
         // given
         var currentDateTime = LocalDateTime.now();
@@ -66,10 +66,7 @@ class FavoriteTrackServiceTest {
             assertThat(entry.getValue()).hasSize(5);
         });
 
-        assertThat(artistSongMap.pollFirstEntry()).satisfies(entry -> {
-            assertThat(entry.getKey()).isEqualTo("benny the butcher");
-            assertThat(entry.getValue()).hasSize(3);
-        });
+        assertThat(artistSongMap).isEmpty();
     }
 
 }

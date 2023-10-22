@@ -3,6 +3,7 @@ package com.example.spotifycherrypicking.service;
 import com.example.spotifycherrypicking.model.domain.Track;
 import com.example.spotifycherrypicking.model.spotify.ItemDto;
 import com.example.spotifycherrypicking.model.spotify.SpotifyTrackResponseDto;
+import com.example.spotifycherrypicking.model.spotify.UserProfileDto;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -61,5 +62,15 @@ public class SpotifyWebServiceImpl implements SpotifyWebService {
                         d.track().artists().getFirst().name(),
                         OffsetDateTime.parse(d.addedAt()).toLocalDateTime()
                 ));
+    }
+
+    @Override
+    public UserProfileDto fetchUserProfile() {
+        return spofifyWebClient
+                .get()
+                .uri("/v1/me")
+                .retrieve()
+                .bodyToMono(UserProfileDto.class)
+                .block();
     }
 }

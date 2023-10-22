@@ -1,6 +1,7 @@
 package com.example.spotifycherrypicking.service;
 
 import com.example.spotifycherrypicking.model.domain.Track;
+import com.example.spotifycherrypicking.model.spotify.UserProfileDto;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,14 +29,21 @@ public class FavoriteTrackService {
                         )
                 ));
 
-        return collect.entrySet()
+        LinkedHashMap<String, List<Track>> organizedSongsMap = collect.entrySet()
                 .stream()
                 .sorted((e1, e2) -> Integer.compare(e2.getValue().size(), e1.getValue().size()))
+                .filter(e -> e.getValue().size() >= 5)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
+
+        return organizedSongsMap;
+    }
+
+    public UserProfileDto fetchMe() {
+        return spotifyWebService.fetchUserProfile();
     }
 }
