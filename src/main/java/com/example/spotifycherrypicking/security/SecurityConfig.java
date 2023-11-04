@@ -12,9 +12,7 @@ public class SecurityConfig {
     // todo refactor; can i call oauth2Login() on the HttpSecurity object directly?
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/initiateLogin").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .oauth2Login(oAuth2LoginConfigurer -> oAuth2LoginConfigurer
                         .defaultSuccessUrl("http://localhost:4200/home")
                         .failureUrl("http://localhost:4200/error"));
