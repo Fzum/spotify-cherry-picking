@@ -3,6 +3,7 @@ package com.example.spotifycherrypicking.controller;
 import com.example.spotifycherrypicking.service.CherryPickArtistService;
 import com.example.spotifycherrypicking.service.FavoriteTrackSpotifyService;
 import com.example.spotifycherrypicking.service.MeSpotifyService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ public class SpotifyController {
         return favoriteTrackSpotifyService.fetchAndOrganizeMyFavoriteTracksByArtistAndTrackCount().toString();
     }
 
-    @GetMapping("/me")
+    @GetMapping("/home")
     public String getMe() {
         return meSpotifyService.fetchMe().toString();
     }
@@ -35,5 +36,13 @@ public class SpotifyController {
     public String createPlaylists() {
         cherryPickArtistService.createCherryPickedPlaylists();
         return "Playlists created!";
+    }
+
+    public record Test(String test) {
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<Test> test() {
+        return ResponseEntity.ok(new Test("test"));
     }
 }
