@@ -35,7 +35,7 @@ public class SpotifyController {
     @GetMapping("/create-cherry-picked-playlists")
     public String createPlaylists() {
         cherryPickArtistService.createCherryPickedPlaylists();
-        return "Playlists created!";
+        return "Playlists synced (created or updated)!";
     }
 
     public record Test(String test) {

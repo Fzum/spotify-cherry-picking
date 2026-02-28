@@ -9,7 +9,7 @@ spring:
             client-secret: 90785ad5c0d94adea25710b5c92cc19f
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/spotify
-            scope: user-library-read,playlist-modify-private,playlist-modify-public,user-read-private
+            scope: user-library-read,playlist-read-private,playlist-modify-private,playlist-modify-public,user-read-private
         provider:
           spotify:
             user-name-attribute: id

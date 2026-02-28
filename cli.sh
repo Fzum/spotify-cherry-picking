@@ -12,6 +12,15 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
+echo "Preparing clean build..."
+if [[ -d "target" ]]; then
+  echo "Deleting existing target/ directory..."
+  rm -rf target
+  echo "Deleted target/."
+else
+  echo "No target/ directory found. Continuing."
+fi
+
 # ── Configuration ─────────────────────────────────────────────────────────────
 # Read the Spotify client ID from application.yaml (same value used by the web server).
 # Override by setting SPOTIFY_CLIENT_ID in your environment.
@@ -27,7 +36,7 @@ else
   CLIENT_ID="$SPOTIFY_CLIENT_ID"
 fi
 REDIRECT_URI="http://127.0.0.1:8888/callback"
-SCOPES="user-library-read playlist-modify-private playlist-modify-public user-read-private"
+SCOPES="user-library-read playlist-read-private playlist-modify-private playlist-modify-public user-read-private"
 CALLBACK_PORT=8888
 
 # ── Helper: check required tools ──────────────────────────────────────────────
@@ -135,12 +144,14 @@ fi
 echo "Successfully authenticated with Spotify!"
 echo ""
 
-# ── Step 5: Build the JAR if it does not exist ───────────────────────────────
-JAR=$(find target -maxdepth 1 -name "*.jar" ! -name "*-sources.jar" 2>/dev/null | head -1)
+# ── Step 5: Build a fresh JAR ────────────────────────────────────────────────
+echo "Building a fresh application JAR..."
+./mvnw -q package -DskipTests
+JAR=$(find target -maxdepth 1 -name "*.jar" ! -name "*-sources.jar" 2>/dev/null | head -1 || true)
+
 if [[ -z "$JAR" ]]; then
-  echo "Building the application (first run may take a minute)..."
-  ./mvnw -q package -DskipTests
-  JAR=$(find target -maxdepth 1 -name "*.jar" ! -name "*-sources.jar" | head -1)
+  echo "Error: build finished but no runnable JAR was found in target/." >&2
+  exit 1
 fi
 
 # ── Step 6: Launch the CLI ────────────────────────────────────────────────────

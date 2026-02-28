@@ -44,14 +44,16 @@ public class SpotifyCliRunner implements ApplicationRunner {
                 String input = scanner.nextLine().trim();
                 System.out.println();
                 switch (input) {
-                    case "1" -> showProfile();
-                    case "2" -> showTracksByArtist();
-                    case "3" -> createCherryPickedPlaylists();
-                    case "4" -> {
+                    case "1" -> showMyProfile();
+                    case "2" -> showLikedTracksByArtist();
+                    case "3" -> rebuildCherryPickedPlaylists();
+                    case "4" -> deleteAllCherryPickedPlaylists();
+                    case "5" -> listAllCherryPickedPlaylists();
+                    case "6" -> {
                         System.out.println("Goodbye!");
                         running = false;
                     }
-                    default -> System.out.println("Invalid option. Please enter 1, 2, 3, or 4.");
+                    default -> System.out.println("Invalid option. Please enter a number from 1 to 6.");
                 }
                 if (running) {
                     System.out.println();
@@ -61,15 +63,17 @@ public class SpotifyCliRunner implements ApplicationRunner {
     }
 
     private void printMenu() {
-        System.out.println("What would you like to do?");
-        System.out.println("  1) Show my Spotify profile");
-        System.out.println("  2) Show liked tracks grouped by artist (artists with \u22655 liked songs)");
-        System.out.println("  3) Create cherry-picked playlists on Spotify");
-        System.out.println("  4) Exit");
+        System.out.println("Select an action:");
+        System.out.println("  1) View my Spotify profile");
+        System.out.println("  2) View liked tracks by artist (artists with \u22655 songs)");
+        System.out.println("  3) Rebuild cherry-picked playlists (delete all + create new)");
+        System.out.println("  4) Delete all cherry-picked playlists");
+        System.out.println("  5) List all cherry-picked playlists (A-Z)");
+        System.out.println("  6) Exit");
         System.out.print("> ");
     }
 
-    private void showProfile() {
+    private void showMyProfile() {
         System.out.println("Fetching your Spotify profile...");
         var profile = meSpotifyService.fetchMe();
         System.out.println("\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500");
@@ -78,7 +82,7 @@ public class SpotifyCliRunner implements ApplicationRunner {
         System.out.println("\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500");
     }
 
-    private void showTracksByArtist() {
+    private void showLikedTracksByArtist() {
         System.out.println("Fetching and organising your liked tracks...");
         Map<String, List<Track>> tracksByArtist =
                 favoriteTrackSpotifyService.fetchAndOrganizeMyFavoriteTracksByArtistAndTrackCount();
@@ -95,10 +99,28 @@ public class SpotifyCliRunner implements ApplicationRunner {
         });
     }
 
-    private void createCherryPickedPlaylists() {
-        System.out.println("Creating cherry-picked playlists on Spotify...");
+    private void rebuildCherryPickedPlaylists() {
+        System.out.println("Rebuilding cherry-picked playlists on Spotify...");
         System.out.println("(This may take a moment for large libraries.)");
         cherryPickArtistService.createCherryPickedPlaylists();
-        System.out.println("Done! Check your Spotify account for the new playlists.");
+        System.out.println("Done! Cherry-picked playlists were rebuilt.");
+    }
+
+    private void deleteAllCherryPickedPlaylists() {
+        System.out.println("Deleting all cherry-picked playlists...");
+        cherryPickArtistService.deleteCherryPickedPlaylists();
+        System.out.println("Done.");
+    }
+
+    private void listAllCherryPickedPlaylists() {
+        System.out.println("Loading cherry-picked playlists...");
+        var playlistNames = cherryPickArtistService.listCherryPickedPlaylistsAlphabetically();
+        if (playlistNames.isEmpty()) {
+            System.out.println("No cherry-picked playlists found.");
+            return;
+        }
+
+        System.out.printf("Found %d cherry-picked playlist(s):%n", playlistNames.size());
+        playlistNames.forEach(name -> System.out.printf("  - %s%n", name));
     }
 }

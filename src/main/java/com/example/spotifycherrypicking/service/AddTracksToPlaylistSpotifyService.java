@@ -14,4 +14,8 @@ public class AddTracksToPlaylistSpotifyService {
     public void add(String playlistId, AddTracksToPlaylistDto trackUris) {
         spotifyWebService.addTracksToPlaylist(playlistId, trackUris);
     }
+
+    public void replace(String playlistId, AddTracksToPlaylistDto trackUris) {
+        spotifyWebService.replaceTracksInPlaylist(playlistId, trackUris);
+    }
 }
