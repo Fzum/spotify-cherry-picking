@@ -123,11 +123,15 @@ chmod +x cli.sh
 ║   Spotify Cherry Picking CLI         ║
 ╚══════════════════════════════════════╝
 
-What would you like to do?
-  1) Show my Spotify profile
-  2) Show liked tracks grouped by artist (artists with ≥5 liked songs)
-  3) Create cherry-picked playlists on Spotify
-  4) Exit
+Select an action:
+  1) View my Spotify profile
+  2) View liked tracks by artist (artists with ≥5 songs)
+  3) Rebuild cherry-picked playlists (delete all + create new)
+  4) Delete all cherry-picked playlists
+  5) List all cherry-picked playlists (A-Z)
+  6) Show library statistics
+  7) Rebuild decade playlists (Decade Mix: 1990s …)
+  8) Exit
 >
 ```
 
@@ -159,6 +163,8 @@ Once logged in, use the following endpoints:
 | `GET /home` | Returns your Spotify user profile |
 | `GET /playlists` | Lists your liked tracks grouped by artist (≥5 tracks) |
 | `GET /create-cherry-picked-playlists` | Creates the cherry-picked playlists on Spotify |
+| `GET /stats` | Returns library statistics (total tracks, artists, top artists, tracks by decade) |
+| `GET /create-decade-playlists` | Creates "Decade Mix: 1990s" style playlists for each decade (≥3 liked tracks) |
 | `GET /test` | Health-check endpoint |
 
 Example using curl after authenticating in the browser (copy your `JSESSIONID` cookie from DevTools):
@@ -181,13 +187,16 @@ src/main/java/com/example/spotifycherrypicking/
 ├── controller/
 │   └── SpotifyController.java         # REST endpoints
 ├── model/
-│   ├── domain/Track.java              # Internal track representation
+│   ├── domain/
+│   │   ├── Track.java                 # Internal track representation
+│   │   └── LibraryStats.java          # Library statistics snapshot
 │   └── spotify/                       # Spotify API DTOs
 ├── security/
 │   └── SecurityConfig.java            # Spring Security OAuth2 setup (profile: !cli)
 └── service/
-    ├── CherryPickArtistService.java   # Orchestrates the playlist-creation workflow
-    ├── FavoriteTrackSpotifyService.java # Fetch + group liked tracks
+    ├── CherryPickArtistService.java   # Orchestrates artist & decade playlist workflows
+    ├── FavoriteTrackSpotifyService.java # Fetch + group liked tracks (by artist or decade)
+    ├── LibraryStatsService.java        # Compute library statistics
     ├── MeSpotifyService.java          # Fetch user profile
     ├── CreatePlaylisSpotifytService.java
     ├── AddTracksToPlaylistSpotifyService.java
