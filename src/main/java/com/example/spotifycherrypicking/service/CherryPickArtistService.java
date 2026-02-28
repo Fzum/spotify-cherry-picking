@@ -3,6 +3,7 @@ package com.example.spotifycherrypicking.service;
 import com.example.spotifycherrypicking.model.AddTracksToPlaylistDto;
 import com.example.spotifycherrypicking.model.domain.Track;
 import com.example.spotifycherrypicking.model.spotify.CreatePlaylistRequestDto;
+import com.example.spotifycherrypicking.model.spotify.PlaylistDto;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class CherryPickArtistService {
     private static final String CHERRY_PICKED_PLAYLIST_PREFIX = "Cherry Picked: ";
+    private static final String DECADE_PLAYLIST_PREFIX = "Decade Mix: ";
 
     private final FavoriteTrackSpotifyService favoriteTrackSpotifyService;
     private final CreatePlaylisSpotifytService createPlaylisSpotifytService;
@@ -76,5 +78,47 @@ public class CherryPickArtistService {
 
     private static String getDescription(String artist) {
         return String.format("Cherry picked tracks from %s", artist);
+    }
+
+    public void createDecadePlaylists() {
+        var tracksByDecade = favoriteTrackSpotifyService.groupTracksByDecade();
+        var me = meSpotifyService.fetchMe();
+
+        deleteDecadePlaylists();
+
+        tracksByDecade.forEach((decade, tracks) -> {
+            var playlistName = DECADE_PLAYLIST_PREFIX + decade;
+            var description = String.format("Cherry picked tracks from the %s", decade);
+            var createDto = new CreatePlaylistRequestDto(playlistName, description, false);
+            System.out.printf("Creating decade playlist: %s%n", playlistName);
+            var playlistId = createPlaylisSpotifytService.createPlaylists(me.id(), createDto);
+            var trackUris = tracks.stream().map(Track::uri).collect(Collectors.toCollection(LinkedHashSet::new));
+            System.out.printf("Adding %d track(s) to: %s%n", trackUris.size(), playlistName);
+            addTracksToPlaylistSpotifyService.add(playlistId, new AddTracksToPlaylistDto(trackUris));
+        });
+    }
+
+    public void deleteDecadePlaylists() {
+        var me = meSpotifyService.fetchMe();
+        var toDelete = spotifyWebService.findPlaylistsByPrefix(me.id(), DECADE_PLAYLIST_PREFIX).toList();
+
+        if (toDelete.isEmpty()) {
+            System.out.println("No decade playlists found to delete.");
+            return;
+        }
+
+        System.out.printf("Deleting %d decade playlist(s):%n", toDelete.size());
+        toDelete.forEach(playlist -> {
+            System.out.printf("  - Deleting: %s%n", playlist.name());
+            spotifyWebService.deletePlaylist(playlist.id());
+        });
+    }
+
+    public List<String> listDecadePlaylists() {
+        var me = meSpotifyService.fetchMe();
+        return spotifyWebService.findPlaylistsByPrefix(me.id(), DECADE_PLAYLIST_PREFIX)
+                .map(PlaylistDto::name)
+                .sorted(Comparator.naturalOrder())
+                .toList();
     }
 }

@@ -1,8 +1,10 @@
 package com.example.spotifycherrypicking.cli;
 
+import com.example.spotifycherrypicking.model.domain.LibraryStats;
 import com.example.spotifycherrypicking.model.domain.Track;
 import com.example.spotifycherrypicking.service.CherryPickArtistService;
 import com.example.spotifycherrypicking.service.FavoriteTrackSpotifyService;
+import com.example.spotifycherrypicking.service.LibraryStatsService;
 import com.example.spotifycherrypicking.service.MeSpotifyService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -20,14 +22,17 @@ public class SpotifyCliRunner implements ApplicationRunner {
     private final FavoriteTrackSpotifyService favoriteTrackSpotifyService;
     private final MeSpotifyService meSpotifyService;
     private final CherryPickArtistService cherryPickArtistService;
+    private final LibraryStatsService libraryStatsService;
 
     public SpotifyCliRunner(
             FavoriteTrackSpotifyService favoriteTrackSpotifyService,
             MeSpotifyService meSpotifyService,
-            CherryPickArtistService cherryPickArtistService) {
+            CherryPickArtistService cherryPickArtistService,
+            LibraryStatsService libraryStatsService) {
         this.favoriteTrackSpotifyService = favoriteTrackSpotifyService;
         this.meSpotifyService = meSpotifyService;
         this.cherryPickArtistService = cherryPickArtistService;
+        this.libraryStatsService = libraryStatsService;
     }
 
     @Override
@@ -49,11 +54,13 @@ public class SpotifyCliRunner implements ApplicationRunner {
                     case "3" -> rebuildCherryPickedPlaylists();
                     case "4" -> deleteAllCherryPickedPlaylists();
                     case "5" -> listAllCherryPickedPlaylists();
-                    case "6" -> {
+                    case "6" -> showLibraryStats();
+                    case "7" -> rebuildDecadePlaylists();
+                    case "8" -> {
                         System.out.println("Goodbye!");
                         running = false;
                     }
-                    default -> System.out.println("Invalid option. Please enter a number from 1 to 6.");
+                    default -> System.out.println("Invalid option. Please enter a number from 1 to 8.");
                 }
                 if (running) {
                     System.out.println();
@@ -69,7 +76,9 @@ public class SpotifyCliRunner implements ApplicationRunner {
         System.out.println("  3) Rebuild cherry-picked playlists (delete all + create new)");
         System.out.println("  4) Delete all cherry-picked playlists");
         System.out.println("  5) List all cherry-picked playlists (A-Z)");
-        System.out.println("  6) Exit");
+        System.out.println("  6) Show library statistics");
+        System.out.println("  7) Rebuild decade playlists (Decade Mix: 1990s …)");
+        System.out.println("  8) Exit");
         System.out.print("> ");
     }
 
@@ -122,5 +131,29 @@ public class SpotifyCliRunner implements ApplicationRunner {
 
         System.out.printf("Found %d cherry-picked playlist(s):%n", playlistNames.size());
         playlistNames.forEach(name -> System.out.printf("  - %s%n", name));
+    }
+
+    private void showLibraryStats() {
+        System.out.println("Fetching your library statistics...");
+        LibraryStats stats = libraryStatsService.fetchStats();
+        System.out.println("\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500");
+        System.out.printf("  Total liked tracks     : %d%n", stats.totalTracks());
+        System.out.printf("  Unique artists         : %d%n", stats.totalArtists());
+        System.out.printf("  Artists with \u22655 tracks : %d%n", stats.qualifyingArtistsCount());
+        System.out.printf("  Top %d artists:%n", LibraryStatsService.TOP_ARTISTS_COUNT);
+        for (int i = 0; i < stats.topArtists().size(); i++) {
+            System.out.printf("    %d. %s%n", i + 1, stats.topArtists().get(i));
+        }
+        System.out.printf("  Tracks by decade:%n");
+        stats.tracksByDecade().forEach((decade, count) ->
+                System.out.printf("    %s : %d track(s)%n", decade, count));
+        System.out.println("\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500");
+    }
+
+    private void rebuildDecadePlaylists() {
+        System.out.println("Rebuilding decade playlists on Spotify...");
+        System.out.println("(This may take a moment for large libraries.)");
+        cherryPickArtistService.createDecadePlaylists();
+        System.out.println("Done! Decade playlists were rebuilt.");
     }
 }

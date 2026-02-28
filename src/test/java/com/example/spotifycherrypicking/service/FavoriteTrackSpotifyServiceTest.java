@@ -69,4 +69,33 @@ class FavoriteTrackSpotifyServiceTest {
         assertThat(artistSongMap).isEmpty();
     }
 
+    @Test
+    @DisplayName("should group tracks by decade, sorted chronologically, filtering below minimum")
+    void shouldGroupTracksByDecade() {
+        // given – 3 tracks in 1990s, 4 in 2000s, 2 in 2020s (below MIN_TRACKS_PER_DECADE=3, filtered out)
+        when(spotifyWebService.fetchTracks()).thenReturn(Stream.of(
+                new Track("1",  "track-1", "album", "spotify:track:1",  "a", LocalDate.of(1993, 1, 1)),
+                new Track("2",  "track-2", "album", "spotify:track:2",  "a", LocalDate.of(1995, 1, 1)),
+                new Track("3",  "track-3", "album", "spotify:track:3",  "b", LocalDate.of(1999, 1, 1)),
+                new Track("4",  "track-4", "album", "spotify:track:4",  "b", LocalDate.of(2001, 1, 1)),
+                new Track("5",  "track-5", "album", "spotify:track:5",  "c", LocalDate.of(2003, 1, 1)),
+                new Track("6",  "track-6", "album", "spotify:track:6",  "c", LocalDate.of(2007, 1, 1)),
+                new Track("7",  "track-7", "album", "spotify:track:7",  "d", LocalDate.of(2009, 6, 1)),
+                new Track("8",  "track-8", "album", "spotify:track:8",  "d", LocalDate.of(2021, 1, 1)),
+                new Track("9",  "track-9", "album", "spotify:track:9",  "e", LocalDate.of(2023, 1, 1))
+        ));
+
+        // when
+        var result = favoriteTrackSpotifyService.groupTracksByDecade();
+
+        // then – 2020s has only 2 tracks (< MIN=3), must be filtered out
+        assertThat(result).containsOnlyKeys("1990s", "2000s");
+        assertThat(result.get("1990s")).hasSize(3);
+        assertThat(result.get("2000s")).hasSize(4);
+        // decades are in chronological (key) order
+        assertThat(result.sequencedKeySet()).containsExactly("1990s", "2000s");
+        // tracks within a decade are sorted newest-first
+        assertThat(result.get("1990s").getFirst().albumReleaseDate()).isEqualTo(LocalDate.of(1999, 1, 1));
+    }
+
 }
