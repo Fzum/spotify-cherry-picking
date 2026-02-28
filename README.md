@@ -48,7 +48,7 @@ In both cases you are redirected to [accounts.spotify.com](https://accounts.spot
 After that, the app holds a short-lived access token and a refresh token to call the Spotify API on your behalf.
 
 > **CLI and OAuth redirects**: A full CLI experience _is_ possible despite Spotify's redirect-based flow.
-> `cli.sh` starts a tiny temporary HTTP server on `localhost:8888` to catch the redirect, extracts the
+> `cli.sh` starts a tiny temporary HTTP server on `127.0.0.1:8888` to catch the redirect, extracts the
 > authorization code, and exchanges it for an access token using PKCE – all without a client secret.
 > Once the token is in hand the browser is no longer needed.
 
@@ -74,7 +74,7 @@ After that, the app holds a short-lived access token and a refresh token to call
 3. Fill in any name/description.
 4. Add **both** redirect URIs:
    - `http://localhost:8080/login/oauth2/code/spotify` ← web-server mode
-   - `http://localhost:8888/callback` ← CLI mode
+   - `http://127.0.0.1:8888/callback` ← CLI mode
 5. Save. Copy your **Client ID**.
 
 ### 2. Configure credentials
@@ -115,7 +115,7 @@ chmod +x cli.sh
 
 1. Your browser opens to Spotify's authorization page.
 2. You click **Authorize** once.
-3. Spotify redirects to `localhost:8888/callback` – `cli.sh` catches it automatically.
+3. Spotify redirects to `127.0.0.1:8888/callback` – `cli.sh` catches it automatically.
 4. The CLI menu appears in your terminal:
 
 ```

@@ -26,7 +26,7 @@ if [[ -z "${SPOTIFY_CLIENT_ID:-}" ]]; then
 else
   CLIENT_ID="$SPOTIFY_CLIENT_ID"
 fi
-REDIRECT_URI="http://localhost:8888/callback"
+REDIRECT_URI="http://127.0.0.1:8888/callback"
 SCOPES="user-library-read playlist-modify-private playlist-modify-public user-read-private"
 CALLBACK_PORT=8888
 
@@ -101,7 +101,7 @@ class _Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):
         pass  # suppress HTTP log noise
 
-server = HTTPServer(("localhost", 8888), _Handler)
+server = HTTPServer(("127.0.0.1", 8888), _Handler)
 server._code = None
 server.handle_request()
 print(server._code or "")
