@@ -197,6 +197,29 @@ src/main/java/com/example/spotifycherrypicking/
 
 ---
 
+## Who can use this app?
+
+**Short answer: only you (and anyone you explicitly add), unless you apply for Spotify's Extended Quota.**
+
+Spotify apps start in **Development Mode**. In this mode:
+
+- Only the **account that owns the Spotify Developer App** (i.e. you) and up to **25 explicitly added users** can log in and use the app.
+- Any other Spotify account that tries to authorize will receive an error from Spotify.
+
+### Adding other users (up to 25)
+
+1. Go to your app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+2. Open **Settings → User Management**.
+3. Enter the Spotify email address of the person you want to grant access and click **Add User**.
+
+> **For personal use this is a non-issue.** This tool is designed to run locally with your own credentials, so Development Mode restrictions do not affect you at all. You are the app owner and are always permitted.
+
+### Lifting the restriction (Extended Quota)
+
+If you ever want to share the app publicly with more than 25 users, you need to apply for **Extended Quota Mode** (previously called "Quota Extension") via the Spotify Developer Dashboard. This requires a review by Spotify.
+
+---
+
 ## Running tests
 
 ```bash
