@@ -16,3 +16,17 @@ spring:
             authorization-uri: https://accounts.spotify.com/authorize
             token-uri: https://accounts.spotify.com/api/token
             user-info-uri: https://api.spotify.com/v1/me
+---
+spring:
+  config:
+    activate:
+      on-profile: cli
+  main:
+    web-application-type: none
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration
+spotify:
+  access-token: ${SPOTIFY_ACCESS_TOKEN}

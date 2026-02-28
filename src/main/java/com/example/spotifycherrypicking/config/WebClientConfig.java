@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.client.web.reactive.function.client.S
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
+@org.springframework.context.annotation.Profile("!cli")
 public class WebClientConfig {
 
     @Bean
